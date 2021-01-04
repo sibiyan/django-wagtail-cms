@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% load static %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block extra_css %}
+
+{% comment %}
+Delete the line below if you're just getting started and want to remove the welcome screen!
+{% endcomment %}
+<link rel="stylesheet" href="{% static 'css/welcome_page.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+
+{% comment %} coverstory start  {% endcomment %}
+{%if self.coverstory_blog%}
+<div class="p-4 p-md-5 mb-4 text-white rounded bg-primary">
+  <div class="col-md-6 px-0">
+    <h1 class="display-4 font-italic">
+    {{self.coverstory_blog.specific.custom_title}}
+    </h1>
+    <p class="lead my-3">
+      {{self.coverstory_blog.specific.introduction |truncatechars:150 }}
+    </p>
+    <p class="lead mb-0">
+      <a href="{% pageurl self.coverstory_blog.specific %}" class="text-white fw-bold">Continue reading...</a>
+    </p>
+  </div>
+</div>
+ {% endif %}
+{% comment %} coverstory end  {% endcomment %}
+
+
+{% comment %} feauted post 1 start {% endcomment %}
+{%if self.featuredPost1_blog%}
+<div class="row mb-2">
+  <div class="col-md-6">
+    <div
+      class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative"
+    >
+      <div class="col p-4 d-flex flex-column position-static">
+         {% for cat in self.featuredPost1_blog.specific.categories.all%}
+            <strong class="d-inline-block mb-2 text-success">{{cat}}</strong>
+        {% endfor%}
+        <h3 class="mb-0"> {{self.featuredPost1_blog.specific.custom_title}}</h3>
+        <div class="mb-1 text-muted">{{self.featuredPost1_blog.specific.date_published}}</div>
+        <p class="card-text mb-auto">
+          {{self.featuredPost1_blog.specific.introduction |truncatechars:100}}
+        </p>
+        <a href="{% pageurl self.featuredPost1_blog.specific %}" class="stretched-link">Continue reading</a>
+      </div>
+      <div class="col-auto d-none d-lg-block">
+       {% image self.featuredPost1_blog.specific.banner_image fill-850x450-c50 as f1image %}
+        <img  width="200"
+          height="250" src="{{ f1image.url }}" class="bd-placeholder-img" />
+      </div>
+    </div>
+  </div>
+  
+{% endif %}
+  {% comment %} featured blog end  {% endcomment %}
+
+
+{%if self.featuredPost2_blog%}
+  <div class="col-md-6">
+    <div
+      class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative"
+    >
+      <div class="col p-4 d-flex flex-column position-static">
+      {% for cat in self.featuredPost2_blog.specific.categories.all%}
+        <strong class="d-inline-block mb-2 text-success">{{cat}}</strong>
+      {% endfor%}
+        <h3 class="mb-0">{{self.featuredPost2_blog.specific.custom_title}}</h3>
+        <div class="mb-1 text-muted">{{self.featuredPost2_blog.specific.date_published}}</div>
+        <p class="mb-auto">
+         {{self.featuredPost2_blog.specific.introduction |truncatechars:100}}
+        </p>
+        <a href="{% pageurl self.featuredPost2_blog.specific %}" class="stretched-link">Continue reading</a>
+      </div>
+      <div class="col-auto d-none d-lg-block">
+       {% image self.featuredPost2_blog.specific.banner_image fill-850x450-c50 as f2image %}
+        <img  width="200"
+          height="250" src="{{ f2image.url }}" class="bd-placeholder-img" />
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+ {% comment %} loop though post  {% endcomment %}
+
+{% if page.blog_listing_section %}
+    <h3 class="pb-4 mb-4 font-italic border-bottom">
+      {{page.blog_listing_section_title}}
+    </h3>
+{% endif %}
+ 
+ <div class="row">
+   <div class="col-md-8"> 
+        {% for childpage in page.blog_listing_section.get_children|slice:"5" %}
+         <div class="row">
+            <div class="col-md-6"> 
+                 {% image childpage.specific.banner_image fill-850x450-c50 as blog_image %}
+                <img src="{{blog_image.url}}" class="img-fluid" alt="...">
+            </div>
+            <div class="col-md-6"> 
+                <article class="blog-post">
+                {% if childpage.specific.content %}
+                  <h2 class="blog-post-title">{{childpage.title }}</h2>
+                    <p class="blog-post-meta">{{childpage.specific.date_published}} |
+                      {% for author in childpage.specific.blog_authors.all %}
+                        <a href="#">{{author.author_name}}</a>
+                      {% endfor %}
+                    </p>
+                    <p>
+                      <p>{{ childpage.specific.introduction |truncatechars:100}} </p>
+                    </p>
+                    
+                   
+                {% endif %}
+              </article>
+            </div>
+           
+        </div>
+          <br>
+        {% endfor %}
+   </div> 
+    <div class="col-md-4"> 
+    <div class="p-4 mb-3 rounded bg-primary">
+    <h4 class="font-italic">{{self.About_section_title}}</h4>
+      <p class="mb-0">
+       {{self.About_section_text}}
+      </p>
+    </div>
+     <div class="p-4">
+      <h4 class="font-italic">Archives</h4>
+      <ol class="list-unstyled mb-0">
+       {% for childpage in page.blog_listing_section.get_children|slice:"5" %}
+          <li><a href="{{childpage.url}}">{{childpage.title }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+   </div>
+ </div>
+ 
+
+<br>
+    <nav class="blog-pagination" aria-label="Pagination">
+      <a class="btn btn-outline-primary" href="#">Older</a>
+      <a
+        class="btn btn-outline-secondary disabled"
+        href="#"
+        tabindex="-1"
+        aria-disabled="true"
+        >Newer</a
+      >
+    </nav>
+  <br>
+  
+
+{% endblock content %}
